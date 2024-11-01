@@ -1,0 +1,7 @@
+main{
+int ab = 123 +312;
+boolean f = false;
+int ba = 123*44;
+boolean c;
+c = true;
+}
