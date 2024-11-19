@@ -1,10 +1,13 @@
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+
+import java.awt.Color;
+import java.awt.Font;
+//import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Vista extends JFrame implements ComponentListener, ActionListener {
     private JMenuBar mb;
@@ -17,6 +20,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
     private JTextField txtParser, txtError;
     private File archivoAbierto;
     private ArrayList<Token> tokens;
+    private InToPost traductor;
     Lexer lexer;
     Parser parser;
 
@@ -31,12 +35,13 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         lexer = new Lexer();
         parser = new Parser();
         tokens = new ArrayList<Token>();
+        traductor = null;
     }
 
     public void Interfaz() {
         // cosas genericas de la interfaz
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //setSize(1600, 800);
+        // setSize(1600, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
@@ -74,7 +79,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         txtParser = new JTextField();
         txtError = new JTextField();
         txtError.setForeground(Color.RED);
-        txtError.setFont(new Font("SansSerif", Font.BOLD, 18)); 
+        txtError.setFont(new Font("SansSerif", Font.BOLD, 18));
 
         x.add(m1);
         x.add(m2);
@@ -217,7 +222,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         // tamaño del boton limpiar
         int btnLimpiarWidth = (int) (w * .08);
         int btnLimpiarHeight = (int) (h * .06);
-        //posicion spcodint
+        // posicion spcodint
         textAreaX = (int) (w * 0.03);
         textAreaY = (int) (h * 0.6);
         // tamaño del textArea para programa
@@ -347,16 +352,37 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
                 AnalizadorSemantico as = new AnalizadorSemantico();
                 b = as.analisisSemantico(parser.getSyntaxTrees());
                 System.out.println("" + b);
-                if (!b){
+                if (!b) {
                     txtError.setText(as.getError());
                     codInt.setText("");
-                }
-                else{
+                    System.out.println("Ahhh valio churro");
+                    Rutinas.Mensaje("Ayudaaaaaa");
+                } else {
                     txtError.setText("");
-                    codInt.setText(CodigoIntermedio.getCodigoIntermedio());
+                    List<List<Token>> aux = parser.getOperacionesListas();
+                    List<List<Token>> statements = parser.getStatements();
+                    imprimirTokensListas(aux);
+                    parser.vaciaOperacionesListas();
+                    traductor = new InToPost(aux);
+                    List<List<Token>> aux2 = traductor.doTrans();
+                    CodigoIntermedio codInter = new CodigoIntermedio(aux2, statements);
+
+                    codInter.generarCodigoIntermedio();
+                    codInt.setText(codInter.getCodigoIntermedio());
+                    System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                 }
             }
             return;
+        }
+    }
+
+    private void imprimirTokensListas(List<List<Token>> param) {
+        for (int i = 0; i < param.size(); i++) {
+            System.out.println();
+            for (int j = 0; j < param.get(i).size(); j++) {
+                System.out.print(param.get(i).get(j).getValor());
+            }
+            System.out.println();
         }
     }
 

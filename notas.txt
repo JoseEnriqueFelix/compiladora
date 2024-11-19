@@ -1,0 +1,16 @@
+notas:
+
+mov memoria, inmediato(8) (done)
+mov memoria, inmediato(16) (done)
+
+
+
+
+
+mov registro, registro
+
+mul registro
+div registro
+
+add registro, registro
+sub registro, registro

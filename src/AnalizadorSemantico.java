@@ -22,14 +22,6 @@ public class AnalizadorSemantico {
                         return false;
                     if (!evaluarLista(sts, i, aux, 2))
                         return false;
-
-                } else if (aux.getTokenNodoHijoNth(0).getTokenNum() == 10
-                        && aux.getTokenNodoHijoNth(0).getTokenNumPr() == 12
-                        && aux.getTokenNodoHijoNth(1).getTokenNum() == 11
-                        && aux.getTokenNodoHijoNth(2).getTokenNum() == 1) {
-
-                    if (!evaluarLista(sts, i, aux, 3))
-                        return false;
                 }
             }
         }

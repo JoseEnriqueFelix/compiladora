@@ -2,7 +2,6 @@
     .division entre 0
     .id no definido en la lista
     .id mal definido en la lista
-    TODO: .id previamente definido
 
 - id = lista; :
     .id no definido
@@ -14,4 +13,3 @@
 - id = valBool;
     .id no definido
     .id definido como int
-    TODO: .id previamente definido

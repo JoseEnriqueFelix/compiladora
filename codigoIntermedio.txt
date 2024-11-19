@@ -1,0 +1,12 @@
+section .data
+    ab  DD  ?
+    f   DW  ?
+    c   DW  ?
+
+section .code
+    MOV     AX,     123
+    MOV     CX,     44
+    IMUL    AX,     CX
+    MOV     ab,     AX
+    MOV     f,      1
+    MOV     c,      0

@@ -1,25 +1,24 @@
 public class Token {
     private String tipoDeToken;
-    private String valor;
+    private String valor; // Este es el que quiero
     private int tokenNum;
     private int tokenNumPr;
 
-
-    public Token(String tipoDeToken, String valor, int tokenNum){
+    public Token(String tipoDeToken, String valor, int tokenNum) {
         this.tipoDeToken = tipoDeToken;
         this.valor = valor;
         this.tokenNum = tokenNum;
     }
 
-    public String getTipoDeToken(){
+    public String getTipoDeToken() {
         return tipoDeToken;
     }
 
-    public String getValor(){
+    public String getValor() {
         return valor;
     }
 
-    public int getTokenNum(){
+    public int getTokenNum() {
         return tokenNum;
     }
 

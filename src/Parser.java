@@ -7,6 +7,8 @@ import javax.script.ScriptException;
 public class Parser {
 
     private SyntaxTree[] sts;
+    private List<List<Token>> operacionesListas;
+    private List<List<Token>> statements;
 
     // Tabla tokens:
     // 1 => IG
@@ -26,8 +28,13 @@ public class Parser {
     // 13 => boolean
     // 14 => true || false
 
+    public List<List<Token>> getStatements() {
+        return statements;
+    }
+
     public Parser() {
         sts = null;
+        operacionesListas = new ArrayList<List<Token>>();
     }
 
     public SyntaxTree[] getSyntaxTrees() {
@@ -43,9 +50,9 @@ public class Parser {
                 return false;
             if (tokens.size() == 3 && tokens.get(2).getTokenNum() == 8)
                 return true;
-            List<List<Token>> statements = armarStatements(tokens.subList(2, tokens.size() - 1));
-            CodigoIntermedio codInt = new CodigoIntermedio();
-            generarCodigoIntermedio(statements, codInt);
+            statements = armarStatements(tokens.subList(2, tokens.size() - 1));
+            // CodigoIntermedio codInt = new CodigoIntermedio();
+            // generarCodigoIntermedio(statements, codInt);
             if (!evaluarStatements(statements))
                 return false;
             if (tokens.get(tokens.size() - 1).getTokenNum() != 8)
@@ -57,105 +64,6 @@ public class Parser {
         }
     }
 
-    private void generarCodigoIntermedio(List<List<Token>> statements, CodigoIntermedio codInt) {
-        String data = ".data\n";
-        String code = ".code\n";
-        HashMap<String, Integer> variables = new HashMap<>();
-        // .data
-        for (int i = 0; i < statements.size(); i++) {
-            if (statements.get(i).get(0).getTokenNumPr() == 12) {
-                if (statements.get(i).size() == 3) {
-                    if (statements.get(i).get(1).getTokenNum() == 11 && statements.get(i).get(2).getTokenNum() == 6) {
-                        data += statements.get(i).get(1).getValor() + "    dw  ?\n";
-                        variables.put(statements.get(i).get(1).getValor(), null);
-                    }
-                } else {
-                    if (statements.get(i).get(1).getTokenNum() == 11 && statements.get(i).get(2).getTokenNum() == 1
-                            && statements.get(i).get(statements.get(i).size() - 1).getTokenNum() == 6
-                            && parserLista(statements.get(i).subList(3, statements.get(i).size() - 1))) {
-                        if (statements.get(i).subList(3, statements.get(i).size() - 1).size() == 1) {
-                            data += statements.get(i).get(1).getValor() + "    dw  "
-                                    + statements.get(i).get(3).getValor() + "\n";
-                            variables.put(statements.get(i).get(1).getValor(),
-                                    Integer.parseInt(statements.get(i).get(3).getValor()));
-                        } else {
-                            data += statements.get(i).get(1).getValor() + "    dw  ?\n";
-                            variables.put(statements.get(i).get(1).getValor(), null);
-                        }
-
-                    }
-                }
-            } else if (statements.get(i).get(0).getTokenNumPr() == 13) {
-                if (statements.get(i).size() == 3) {
-                    if (statements.get(i).get(1).getTokenNum() == 11 && statements.get(i).get(2).getTokenNum() == 6) {
-                        data += statements.get(i).get(1).getValor() + "   db  ?\n";
-                        variables.put(statements.get(i).get(1).getValor(), null);
-                    }
-                } else {
-                    if (statements.get(i).get(1).getTokenNum() == 11 && statements.get(i).get(2).getTokenNum() == 1
-                            && statements.get(i).get(3).getTokenNumPr() == 14
-                            && statements.get(i).get(4).getTokenNum() == 6) {
-                        int aux;
-                        if (statements.get(i).get(3).getValor().equals("false"))
-                            aux = 0;
-                        else
-                            aux = 1;
-                        data += statements.get(i).get(1).getValor() + "     db  " + aux + "\n";
-                        variables.put(statements.get(i).get(1).getValor(), aux);
-                    }
-                }
-            }
-        }
-        CodigoIntermedio.setSectionData(data);
-        // .code
-        // int Id = lista; && id = lista; && id = valBool;
-        for (int i = 0; i < statements.size(); i++) {
-            if (statements.get(i).get(0).getTokenNumPr() == 12) {
-                if (statements.get(i).get(1).getTokenNum() == 11 && statements.get(i).get(2).getTokenNum() == 1
-                        && statements.get(i).get(statements.get(i).size() - 1).getTokenNum() == 6
-                        && parserLista(statements.get(i).subList(3, statements.get(i).size() - 1))) {
-                    if (statements.get(i).subList(3, statements.get(i).size() - 1).size() == 1) {
-                        if (variables.containsKey(statements.get(i).get(1).getValor())
-                                && variables.get(statements.get(i).get(1).getValor()) == Integer
-                                        .parseInt(statements.get(i).get(3).getValor())) {
-                            continue;
-                        }
-                        code += "MOV    " + statements.get(i).get(1).getValor() + ",    "
-                                + Integer.parseInt(statements.get(i).get(3).getValor()) + "\n";
-                        continue;
-                    } else {
-                        // TODO
-                    }
-                }
-            }
-            if (statements.get(i).get(0).getTokenNum() == 11) {
-                if (statements.get(i).size() == 4) {
-                    if (statements.get(i).get(1).getTokenNum() == 1 && statements.get(i).get(3).getTokenNum() == 6) {
-                        if (parserLista(statements.get(i).subList(2, 3))) {
-                            code += "MOV    " + statements.get(i).get(0).getValor() + ",    "
-                                    + Integer.parseInt(statements.get(i).get(2).getValor()) + "\n";
-                            continue;
-                        } else {
-                            int aux;
-                            if (statements.get(i).get(2).getValor().equals("false"))
-                                aux = 0;
-                            else
-                                aux = 1;
-                            code += "MOV    " + statements.get(i).get(0).getValor() + ",    "
-                                    + aux + "\n";
-                            continue;
-                        }
-                    }
-                }
-                else {
-                    //TODO
-                }
-            }
-        }
-        CodigoIntermedio.setCodigoSectionCode(code);
-        System.out.println(CodigoIntermedio.getCodigoIntermedio());
-    }
-
     private boolean evaluarStatements(List<List<Token>> statements) {
         for (int i = 0; i < statements.size(); i++) {
             if (statements.get(i).get(0).getTokenNumPr() == 12) {
@@ -163,24 +71,14 @@ public class Parser {
                     if (statements.get(i).get(1).getTokenNum() != 11 || statements.get(i).get(2).getTokenNum() != 6)
                         return false;
                 } else {
-                    if (statements.get(i).get(1).getTokenNum() != 11 || statements.get(i).get(2).getTokenNum() != 1)
-                        return false;
-                    if (!parserLista(statements.get(i).subList(3, statements.get(i).size() - 1)))
-                        return false;
-                    if (statements.get(i).get(statements.get(i).size() - 1).getTokenNum() != 6)
-                        return false;
+                    return false;
                 }
             } else if (statements.get(i).get(0).getTokenNumPr() == 13) {
                 if (statements.get(i).size() == 3) {
                     if (statements.get(i).get(1).getTokenNum() != 11 || statements.get(i).get(2).getTokenNum() != 6)
                         return false;
                 } else {
-                    if (statements.get(i).get(1).getTokenNum() != 11 || statements.get(i).get(2).getTokenNum() != 1
-                            || statements.get(i).get(3).getTokenNumPr() != 14)
-                        return false;
-                    if (statements.get(i).get(statements.get(i).size() - 1).getTokenNum() != 6
-                            || statements.get(i).size() != 5)
-                        return false;
+                    return false;
                 }
             } else if (statements.get(i).get(0).getTokenNum() == 11) {
                 if (statements.get(i).get(1).getTokenNum() == 1) {
@@ -189,6 +87,8 @@ public class Parser {
                                 || statements.get(i).get(statements.get(i).size() - 1).getTokenNum() != 6
                                 || statements.get(i).size() != 4)
                             return false;
+                    } else {
+                        operacionesListas.add(statements.get(i).subList(2, statements.get(i).size() - 1));
                     }
                     if (statements.get(i).get(statements.get(i).size() - 1).getTokenNum() != 6)
                         return false;
@@ -267,121 +167,16 @@ public class Parser {
         return true;
     }
 
-    private int obtenerNumero(List<Token> arrTokens) {
-        StringBuilder sb = new StringBuilder();
-        for (Token token : arrTokens) {
-            sb.append(token.getValor()).append(" ");
-        }
-
-        String expression = sb.toString().trim();
-
-        return (int) eval(expression);
+    public List<List<Token>> getOperacionesListas() {
+        return operacionesListas;
     }
 
-    public static double eval(final String str) {
-        return new Object() {
-            int pos = -1, ch;
+    public void vaciaOperacionesListas() {
+        operacionesListas = new ArrayList<List<Token>>();
+    }
 
-            void nextChar() {
-                ch = (++pos < str.length()) ? str.charAt(pos) : -1;
-            }
-
-            boolean eat(int charToEat) {
-                while (ch == ' ')
-                    nextChar();
-                if (ch == charToEat) {
-                    nextChar();
-                    return true;
-                }
-                return false;
-            }
-
-            double parse() {
-                nextChar();
-                double x = parseExpression();
-                if (pos < str.length())
-                    throw new RuntimeException("Unexpected: " + (char) ch);
-                return x;
-            }
-
-            // Grammar:
-            // expression = term | expression `+` term | expression `-` term
-            // term = factor | term `*` factor | term `/` factor
-            // factor = `+` factor | `-` factor | `(` expression `)` | number
-            // | functionName `(` expression `)` | functionName factor
-            // | factor `^` factor
-
-            double parseExpression() {
-                double x = parseTerm();
-                for (;;) {
-                    if (eat('+'))
-                        x += parseTerm(); // addition
-                    else if (eat('-'))
-                        x -= parseTerm(); // subtraction
-                    else
-                        return x;
-                }
-            }
-
-            double parseTerm() {
-                double x = parseFactor();
-                for (;;) {
-                    if (eat('*'))
-                        x *= parseFactor(); // multiplication
-                    else if (eat('/'))
-                        x /= parseFactor(); // division
-                    else
-                        return x;
-                }
-            }
-
-            double parseFactor() {
-                if (eat('+'))
-                    return +parseFactor(); // unary plus
-                if (eat('-'))
-                    return -parseFactor(); // unary minus
-
-                double x;
-                int startPos = this.pos;
-                if (eat('(')) { // parentheses
-                    x = parseExpression();
-                    if (!eat(')'))
-                        throw new RuntimeException("Missing ')'");
-                } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
-                    while ((ch >= '0' && ch <= '9') || ch == '.')
-                        nextChar();
-                    x = Double.parseDouble(str.substring(startPos, this.pos));
-                } else if (ch >= 'a' && ch <= 'z') { // functions
-                    while (ch >= 'a' && ch <= 'z')
-                        nextChar();
-                    String func = str.substring(startPos, this.pos);
-                    if (eat('(')) {
-                        x = parseExpression();
-                        if (!eat(')'))
-                            throw new RuntimeException("Missing ')' after argument to " + func);
-                    } else {
-                        x = parseFactor();
-                    }
-                    if (func.equals("sqrt"))
-                        x = Math.sqrt(x);
-                    else if (func.equals("sin"))
-                        x = Math.sin(Math.toRadians(x));
-                    else if (func.equals("cos"))
-                        x = Math.cos(Math.toRadians(x));
-                    else if (func.equals("tan"))
-                        x = Math.tan(Math.toRadians(x));
-                    else
-                        throw new RuntimeException("Unknown function: " + func);
-                } else {
-                    throw new RuntimeException("Unexpected: " + (char) ch);
-                }
-
-                if (eat('^'))
-                    x = Math.pow(x, parseFactor()); // exponentiation
-
-                return x;
-            }
-        }.parse();
+    public SyntaxTree[] getSts() {
+        return sts;
     }
 
 }

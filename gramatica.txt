@@ -1,6 +1,6 @@
 Programa => main{stmnt}
-Stmnt => Instr+ | ∈
-Instr => int Id = lista; | int id; |  boolean id = valBool; | boolean id; | id = lista; | id = valBool; | comment
+Stmnt => Instr*
+Instr => int id; | boolean id; | id = lista; | id = valBool; | comment
 ValBool => true | false
 Comment => #(letra|digito|b/)∗
 Id => letra(letra|digito)∗
