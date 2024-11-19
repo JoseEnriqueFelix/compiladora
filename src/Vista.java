@@ -13,9 +13,9 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
     private JMenuBar mb;
     private JMenu x;
     private JMenuItem m1, m2, m3, m4;
-    private JTextArea ta1, ta2, codInt;
+    private JTextArea ta1, ta2, codInt, binario;
     private JLabel error;
-    private JScrollPane sp1, sp2, spCodInt;
+    private JScrollPane sp1, sp2, spCodInt, spBinario;
     private JButton btnLimpiarTa1, btnLimpiarTa2, btnLimpiarParser, btnTokens, btnParser;
     private JTextField txtParser, txtError;
     private File archivoAbierto;
@@ -59,12 +59,14 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         ta1 = new JTextArea();
         ta2 = new JTextArea();
         codInt = new JTextArea();
+        binario = new JTextArea();
 
         error = new JLabel();
 
         sp1 = new JScrollPane(ta1);
         sp2 = new JScrollPane(ta2);
         spCodInt = new JScrollPane(codInt);
+        spBinario = new JScrollPane(binario);
 
         TextLineNumber lineas = new TextLineNumber(ta1);
         TextLineNumber lineas2 = new TextLineNumber(ta2);
@@ -211,8 +213,8 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         int textArea2X = (int) (w * 0.57);
         int textArea2Y = (int) (h * 0.11);
         // tamaño del textArea
-        int textAreaWidth2 = (int) (w * .40);
-        int textAreaHeight2 = (int) (h * .70);
+        int textAreaWidth2 = (int) (w * 0.40);
+        int textAreaHeight2 = (int) (h * 0.45);
         // darle las medidas al scrollpane/textarea
         sp2.setBounds(textArea2X, textArea2Y, textAreaWidth2, textAreaHeight2);
 
@@ -230,6 +232,15 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         textAreaHeight = (int) (h * .30);
         // darle las medidas al scrollpane/textarea
         spCodInt.setBounds(textAreaX, textAreaY, textAreaWidth, textAreaHeight);
+
+        // posicion spbinario
+        textAreaX = (int) (w * 0.55);
+        textAreaY = (int) (h * 0.6);
+        // tamaño del textArea para programa
+        textAreaWidth = (int) (w * .40);
+        textAreaHeight = (int) (h * .30);
+        // darle las medidas al scrollpane/textarea
+        spBinario.setBounds(textAreaX, textAreaY, textAreaWidth, textAreaHeight);
 
         // darle las medidas al btnLimpiar
         btnLimpiarTa1.setBounds(btnLimpiarX, btnLimpiarY, btnLimpiarWidth, btnLimpiarHeight);
@@ -291,6 +302,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
         add(sp1);
         add(sp2);
         add(spCodInt);
+        add(spBinario);
         add(btnLimpiarTa1);
         add(btnLimpiarTa2);
         add(btnLimpiarParser);
@@ -355,6 +367,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
                 if (!b) {
                     txtError.setText(as.getError());
                     codInt.setText("");
+                    binario.setText("");
                     System.out.println("Ahhh valio churro");
                     Rutinas.Mensaje("Ayudaaaaaa");
                 } else {
@@ -369,7 +382,7 @@ public class Vista extends JFrame implements ComponentListener, ActionListener {
 
                     codInter.generarCodigoIntermedio();
                     codInt.setText(codInter.getCodigoIntermedio());
-                    System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                    binario.setText(codInter.getBinario());
                 }
             }
             return;

@@ -6,11 +6,11 @@ mov memoria, inmediato(16) (done)
 
 
 
-
-mov registro, registro
+mov registro, inmediato(16) (done)
+mov registro, registro (done)
 
 mul registro
 div registro
 
-add registro, registro
-sub registro, registro
+add registro, registro (done)
+sub registro, registro (done)

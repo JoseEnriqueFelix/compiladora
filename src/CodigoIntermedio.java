@@ -8,6 +8,7 @@ public class CodigoIntermedio {
     private List<List<Token>> tokensPostfix;
     private int contadorTokPostfix;
     private List<List<Token>> statements;
+    private String binario;
 
     public CodigoIntermedio(List<List<Token>> tokensPostfix, List<List<Token>> statements) {
         this.tokensPostfix = tokensPostfix;
@@ -45,7 +46,7 @@ public class CodigoIntermedio {
         HashMap<String, String> variables = new HashMap<>(statements.size() * 2);
         int offsetData = 0x0;
         int segmentoData = 0x0;
-        String binario = "";
+        binario = "";
         for (int i = 0; i < statements.size(); i++) {
             // boolean id; && int id;
             if (statements.get(i).get(0).getTokenNumPr() == 12) {
@@ -135,9 +136,11 @@ public class CodigoIntermedio {
                             && statements.get(i).get(statements.get(i).size() - 1).getTokenNum() == 6) {
                         ParsePost pp = new ParsePost(tokensPostfix.get(contadorTokPostfix++),
                                 statements.get(i).get(0).getValor());
-                        List<String> s = pp.doParse();
-                        for (int j = 0; j < s.size(); j++)
-                            code += s.get(j) + "\n";
+                        List<String>[] s = pp.doParse(offsetCode, segmentoCode, variables);
+                        for (int j = 0; j < s[0].size(); j++)
+                            code += s[0].get(j) + "\n";
+                        for (int j = 0; j < s[1].size(); j++)
+                            binario += s[1].get(j);
                     }
                 }
             }
@@ -145,5 +148,9 @@ public class CodigoIntermedio {
         setCodigoSectionCode(code);
         System.out.println(getCodigoIntermedio());
         System.out.println(binario);
+    }
+
+    public String getBinario() {
+        return binario;
     }
 }
